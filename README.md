@@ -1,11 +1,13 @@
-# 小红书视频转图文与网页预览
+# 两个独立的小红书 AI Skill
 
-给自己的 AI 一条有权改编的小红书视频链接，让它挑选原帧、写出图文笔记，再到你扫码授权的创作者中心打开发布前预览。普通官网播放器能提供原片时，整条流程可以在没有 ChatCut、没有 TikHub 密钥的电脑上运行。
+**手里有视频，想做成图文**，选「视频转图文笔记」。**手里已有图文，想预览或发布**，直接选「图文预览与发布」。两个 Skill 各有自己的入口，可以单独交给 AI 使用。
 
 | Skill | 交给它什么 | 它交付什么 |
 | --- | --- | --- |
-| [视频转图文笔记 · xhs-video-to-note](skills/xhs-video-to-note/SKILL.md) | 一条视频分享链接，或本地原片 | 一个图文文件夹，含标题 `title.txt`、正文 `content.txt`、封面 `cover.jpg` 和依次编号的内页 |
-| [小红书图文预览与发布 · xhs-publish-note](skills/xhs-publish-note/SKILL.md) | 上一步的文件夹，或你自己准备好的图文 | 自动上传图片、填写并核对文案，打开官网发布前的笔记预览。正式发布有单独的授权和命令 |
+| [视频转图文笔记 · xhs-video-to-note](skills/xhs-video-to-note/SKILL.md) | 一条有权改编的小红书视频分享链接，或本地原片 | 本地成稿文件夹，含标题 `title.txt`、正文 `content.txt`、封面 `cover.jpg` 和按阅读顺序编号的内页。到这里就可以交稿。 |
+| [图文预览与发布 · xhs-publish-note](skills/xhs-publish-note/SKILL.md) | 一篇已备好的图文文件夹，可以是自己写的，也可以由其他工具生成 | 在指定账号的创作者中心上传图文并打开网页预览。预览会停在正式发布前。只有发布授权涵盖这篇定稿和目标账号时，才提交并核对平台结果。 |
+
+如果想**从视频链接一路做到网页预览**，把第一个 Skill 生成的文件夹交给第二个即可。两者都无需安装 ChatCut。官网播放器允许取得原片时可免费下载。链接下载受限时，提供有权使用的本地原片就能继续，全程都可以不用 TikHub 密钥。
 
 [![示例：由三色便签视频生成的封面和两张内页](examples/cards/preview.jpg)](examples/cards/note)
 
@@ -15,7 +17,9 @@
 
 在 GitHub 选 **Code → Download ZIP** 并解压，或克隆仓库。用能运行本地命令、读取图片的 AI 工具打开包含本 README 的项目目录。支持 Agent Skills 的工具也能分别加载上表两个目录。若你的客户端通过本地 MCP 接工具，按 [MCP 接入与网页预览](bridge/README.md) 配置即可。
 
-把下面这段话和你的链接一起交给 AI，替换两处方括号里的内容。
+只做其中一项，可以直接告诉 AI「用 `xhs-video-to-note` 把这个视频做成图文，完成后把文件夹给我」，或「用 `xhs-publish-note` 把这份现成图文上传到我的账号，停在网页预览」。
+
+要串联两个 Skill，把下面这段话和你的链接一起交给 AI，替换两处方括号里的内容。
 
 > 请读这个项目的 README 和 skills 下的两个 SKILL.md。这条视频我有权改编：[粘贴一条小红书视频分享链接]。请先走免费的官网播放器。取得原片后，看画面再选图，给我标题、正文、封面和内页。若下载受限就告诉我原因，等我提供本地原片再接着做。我这次只授权把成稿上传到 [创作者中心显示的完整昵称] 做网页预览。首次扫码时叫我，完成后保留 Chrome 窗口；用 MCP 时把官网预览图返回给我。停在预览，不要正式发布，也不要调用付费服务。
 
@@ -69,12 +73,17 @@ cp work/first/frames/plan.template.json work/first/plan.json
 ```sh
 .venv/bin/python skills/xhs-video-to-note/scripts/draft.py build \
   --work work/first/frames --plan work/first/plan.json --out work/first/note
-node skills/xhs-publish-note/cli.mjs check work/first/note --json
 ```
 
 打开成品的封面和所有内页，核对图注、裁切、文字与图片顺序。只需要稿件时，`work/first/note/` 就是可以带走或交给另一个 AI 的文件夹。取帧与出稿命令写入新目录；要重做一版时可改用 `frames-v2/` 或 `note-v2/`。
 
 ### 4. 登录自己的账号，停在发布前
+
+从这里开始使用 `xhs-publish-note`。先检查成稿文件夹中的标题、正文和图片顺序。如果是自己准备的图文，把本节命令里的 `work/first/note` 换成你的文件夹路径。
+
+```sh
+node skills/xhs-publish-note/cli.mjs check work/first/note --json
+```
 
 给本机账号起一个固定的名字，例如 `my-xhs`。首次使用或会话失效时，运行登录命令，在官网 Chrome 窗口里扫码。把示例中的「你的官网昵称」换成创作者中心当前显示的完整昵称。登录会话保存在本机用户目录，后续可复用。
 
