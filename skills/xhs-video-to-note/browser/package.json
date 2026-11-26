@@ -1,0 +1,16 @@
+{
+  "name": "xhs-public-video-source",
+  "version": "0.1.3",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "test": "node --test download.test.mjs"
+  },
+  "dependencies": {
+    "playwright-core": "1.65.1"
+  },
+  "license": "MIT"
+}
